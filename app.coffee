@@ -1,5 +1,7 @@
 isExpanded = false
 icon.originZ = 0.5
+icon.centerX()
+icon.centerY()
 postOrigin = {
 	x: post0.x,
 	y: post0.y
