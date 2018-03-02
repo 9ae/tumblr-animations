@@ -109,6 +109,7 @@ renderTags = () ->
 				color: 'white'
 				fontSize: '12px'
 				textAlign: 'center'
+				borderWidth: '0'
 			
 		else
 			tag.style =
@@ -137,10 +138,12 @@ for cat in categories
 		height: 180
 		image: "images/onboard/"+cat.image
 		saturate: 10
+		brightness: 50
 		name: cat.name
 	catLayer.states =
 		selected:
 			saturate: 100
+			brightness: 100
 		hide:
 			image: 'none'
 	nameTag = new Layer
@@ -167,13 +170,17 @@ for cat in categories
 			y: if Math.floor(j / 2) == 0 then 0 else 94
 			image: "images/onboard/"+kit.image
 			saturate: 10
+			brightness: 50
 			opacity: 0
 			name: kit.name
 		kitten.states = 
 			shown:
 				opacity: 100
+				saturate: 10
+				brightness: 50
 			selected:
 				saturate: 100
+				brightness: 100
 		kittenName = new Layer
 			html: kit.name
 			x: 0
@@ -208,7 +215,7 @@ for cat in categories
 				addTag(this.name)
 				this.animate 'selected'
 				thisLayer = this
-				Utils.delay 0.5, ->
+				Utils.delay 1.5, ->
 					thisLayer.animate 'hide'
 					for ch in thisLayer.children
 						if ch.name != 'tagName'
