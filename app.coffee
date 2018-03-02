@@ -1,3 +1,4 @@
+# Home Screen
 isExpanded = false
 icon.originZ = 0.5
 postOrigin = {
@@ -5,14 +6,11 @@ postOrigin = {
 	y: post0.y
 }
 
-# Helper Functions
 chainAnimationsArray = (chain, isAuto) ->
 	if chain.length > 2
 		for i in [1..chain.length-1]
 			chain[i-1].on Events.AnimationEnd, chain[i].start
 	if isAuto then chain[0].start()
-
-# Expand Animations
 
 smallRadius = post0.width/2
 expand0 = new Animation Home,
@@ -53,7 +51,6 @@ expand0.on Events.AnimationEnd, expand1.start
 expand1.on Events.AnimationEnd, expand2.start
 expand2.on Events.AnimationEnd, flower
 
-# Close Animations
 setupCloseAnimations = () ->
 	chain = []
 	for petal in post0.children.reverse()
@@ -90,3 +87,147 @@ closeAnim = setupCloseAnimations()
 add.onTap ->
 	if isExpanded then closeAnim.start() else expand0.start()
 	isExpanded = !isExpanded
+
+
+# Onboarding Screen
+tags = []
+colors = ['#F44336', '#673AB7', '#3F51B5', '#009688', '#2E7D32', '#FF3D00']
+	#Utils.cycle(['#F44336', '#673AB7', '#3F51B5', '#009688', '#2E7D32', '#FF3D00'])
+categories = (require "categories").cats
+xLeft = 3
+xRight = 192
+dy = 150
+i = 0
+
+renderTags = () ->
+	i = 0
+	for tag in tagcloud.children
+		if i < tags.length
+			tag.html = tags[i]
+			tag.backgroundColor = colors[i%colors.length]
+			tag.style =
+				color: 'white'
+				fontSize: '12px'
+				textAlign: 'center'
+			
+		else
+			tag.style =
+				borderStyle: 'dashed'
+				borderWidth: '1px'
+				borderColor: '#898989'
+			tag.html = ''
+			tag.backgroundColor = 'transparent'
+		i += 1
+
+addTag = (tag) ->
+	tags.push(tag)
+	renderTags()
+
+removeTag = (tag) ->
+	index = tags.indexOf(tag)
+	if index != -1
+		tags.splice(index, 1)
+		renderTags()
+
+for cat in categories
+	catLayer = new Layer
+		x: if i % 2 == 0 then xLeft else xRight
+		y: dy
+		width: 180
+		height: 180
+		image: "images/onboard/"+cat.image
+		saturate: 10
+		name: cat.name
+	catLayer.states =
+		selected:
+			saturate: 100
+		hide:
+			image: 'none'
+	nameTag = new Layer
+		name: 'tagName'
+		html: cat.name
+		x: 0
+		y: 160
+		width: 180
+		height: 20
+		backgroundColor: 'rgba(0, 0, 0, 0.6)'
+		color: 'white'
+		style:
+			fontSize: '12px'
+			paddingLeft: '6px'
+			lineHeight: '12px'
+			paddingTop: '4px'
+	catLayer.addChild(nameTag)
+	j = 0
+	for kit in cat.children
+		kitten = new Layer
+			width: 86
+			height: 86
+			x: if j % 2 == 0 then 0 else 94
+			y: if Math.floor(j / 2) == 0 then 0 else 94
+			image: "images/onboard/"+kit.image
+			saturate: 10
+			opacity: 0
+			name: kit.name
+		kitten.states = 
+			shown:
+				opacity: 100
+			selected:
+				saturate: 100
+		kittenName = new Layer
+			html: kit.name
+			x: 0
+			y: 64
+			width: 84
+			height: 20
+			backgroundColor: 'rgba(0, 0, 0, 0.6)'
+			color: 'white'
+			style:
+				fontSize: '12px'
+				paddingLeft: '6px'
+				lineHeight: '12px'
+				paddingTop: '4px'
+		kitten.onTap ->
+			if this.states.current.name == 'shown'
+				this.animate 'selected'
+				addTag(this.name)
+				return
+			if this.states.current.name == 'selected'
+				this.animate 'shown'
+				removeTag(this.name)
+				return
+		kitten.addChild(kittenName)
+		catLayer.addChild(kitten)
+		j += 1
+	
+	Onboard.addChild(catLayer)
+	
+	catLayer.onTap ->
+		switch this.states.current.name
+			when 'default'
+				addTag(this.name)
+				this.animate 'selected'
+				thisLayer = this
+				Utils.delay 0.5, ->
+					thisLayer.animate 'hide'
+					for ch in thisLayer.children
+						if ch.name != 'tagName'
+							ch.animate 'shown'
+						else
+							ch.opacity = 0
+					
+			when 'selected'
+				removeTag(this.name)
+		
+	
+	if Math.floor(i / 2) > 0 then dy += 189
+	i +=1
+
+renderTags()
+
+# Screen Flow
+flow = new FlowComponent
+flow.showNext(Onboard)
+
+post0.onTap ->
+	flow.showNext(Onboard)
