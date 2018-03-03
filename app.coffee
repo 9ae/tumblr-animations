@@ -91,8 +91,7 @@ add.onTap ->
 
 # Onboarding Screen
 tags = []
-colors = ['#F44336', '#673AB7', '#3F51B5', '#009688', '#2E7D32', '#FF3D00']
-	#Utils.cycle(['#F44336', '#673AB7', '#3F51B5', '#009688', '#2E7D32', '#FF3D00'])
+colors = ['#009688', '#F44336', '#673AB7', '#3F51B5']
 categories = (require "categories").cats
 xLeft = 3
 xRight = 192
@@ -140,11 +139,14 @@ for cat in categories
 		saturate: 10
 		brightness: 50
 		name: cat.name
+		borderRadius: 6
 	catLayer.states =
 		selected:
-			saturate: 100
 			brightness: 100
-		hide:
+			saturate: 100
+			opacity: 0
+		divide:
+			opacity: 1
 			image: 'none'
 	nameTag = new Layer
 		name: 'tagName'
@@ -173,6 +175,7 @@ for cat in categories
 			brightness: 50
 			opacity: 0
 			name: kit.name
+			borderRadius: 3
 		kitten.states = 
 			shown:
 				opacity: 100
@@ -210,21 +213,17 @@ for cat in categories
 	Onboard.addChild(catLayer)
 	
 	catLayer.onTap ->
-		switch this.states.current.name
-			when 'default'
-				addTag(this.name)
-				this.animate 'selected'
-				thisLayer = this
-				Utils.delay 1.5, ->
-					thisLayer.animate 'hide'
-					for ch in thisLayer.children
-						if ch.name != 'tagName'
-							ch.animate 'shown'
-						else
-							ch.opacity = 0
-					
-			when 'selected'
-				removeTag(this.name)
+		if this.states.current.name != 'default'
+			return
+		this.animate 'selected'
+		thisLayer = this
+		Utils.delay .8, ->
+			thisLayer.stateSwitch 'divide'
+			for ch in thisLayer.children
+				if ch.name != 'tagName'
+					ch.animate 'shown'
+				else
+					ch.opacity = 0
 		
 	
 	if Math.floor(i / 2) > 0 then dy += 189
