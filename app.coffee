@@ -116,7 +116,7 @@ renderTags = () ->
 			tag.style =
 				borderStyle: 'dashed'
 				borderWidth: '1px'
-				borderColor: '#898989'
+				borderColor: '#dcdcdc'
 			tag.html = ''
 			tag.backgroundColor = 'transparent'
 		i += 1
@@ -151,21 +151,28 @@ for cat in categories
 			blur: 0
 			opacity: 1
 			image: 'none'
-	nameTag = new Layer
+	nameTag = new TextLayer
+		text: cat.name
 		name: 'tagName'
-		html: cat.name
-		x: 0
-		y: 160
-		width: 180
-		height: 20
-		backgroundColor: 'rgba(0, 0, 0, 0.6)'
 		color: 'white'
-		borderRadius: '0 0 6px 6px'
-		style:
-			fontSize: '12px'
-			paddingLeft: '6px'
-			lineHeight: '12px'
-			paddingTop: '4px'
+		padding:
+			left: 8
+			top: 8
+# 	nameTag = new Layer
+# 		name: 'tagName'
+# 		html: cat.name
+# 		x: 0
+# 		y: 160
+# 		width: 180
+# 		height: 20
+# 		backgroundColor: 'rgba(0, 0, 0, 0.6)'
+# 		color: 'white'
+# 		borderRadius: '0 0 6px 6px'
+# 		style:
+# 			fontSize: '12px'
+# 			paddingLeft: '6px'
+# 			lineHeight: '12px'
+# 			paddingTop: '4px'
 	catLayer.addChild nameTag
 	j = 0
 	for kit in cat.children
@@ -238,7 +245,7 @@ renderTags()
 
 # Screen Flow
 flow = new FlowComponent
-flow.showNext(Onboard)
+flow.showNext(Home)
 
 post0.onTap ->
 	flow.showNext(Onboard)
