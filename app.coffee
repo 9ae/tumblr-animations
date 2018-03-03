@@ -106,9 +106,11 @@ renderTags = () ->
 			tag.backgroundColor = colors[i%colors.length]
 			tag.style =
 				color: 'white'
-				fontSize: '12px'
+				fontSize: '11px'
 				textAlign: 'center'
 				borderWidth: '0'
+				lineHeight: '9px'
+				paddingTop: '7px'
 			
 		else
 			tag.style =
@@ -144,8 +146,9 @@ for cat in categories
 		selected:
 			brightness: 100
 			saturate: 100
-			opacity: 0
+			blur: 12
 		divide:
+			blur: 0
 			opacity: 1
 			image: 'none'
 	nameTag = new Layer
@@ -157,12 +160,13 @@ for cat in categories
 		height: 20
 		backgroundColor: 'rgba(0, 0, 0, 0.6)'
 		color: 'white'
+		borderRadius: '0 0 6px 6px'
 		style:
 			fontSize: '12px'
 			paddingLeft: '6px'
 			lineHeight: '12px'
 			paddingTop: '4px'
-	catLayer.addChild(nameTag)
+	catLayer.addChild nameTag
 	j = 0
 	for kit in cat.children
 		kitten = new Layer
@@ -174,7 +178,7 @@ for cat in categories
 			saturate: 10
 			brightness: 50
 			opacity: 0
-			name: kit.name
+			name: kit.name + '<br />'+cat.name
 			borderRadius: 3
 		kitten.states = 
 			shown:
@@ -187,11 +191,12 @@ for cat in categories
 		kittenName = new Layer
 			html: kit.name
 			x: 0
-			y: 64
-			width: 84
+			y: 66
+			width: 86
 			height: 20
 			backgroundColor: 'rgba(0, 0, 0, 0.6)'
 			color: 'white'
+			borderRadius: '0 0 3px 3px'
 			style:
 				fontSize: '12px'
 				paddingLeft: '6px'
@@ -200,17 +205,17 @@ for cat in categories
 		kitten.onTap ->
 			if this.states.current.name == 'shown'
 				this.animate 'selected'
-				addTag(this.name)
+				addTag this.name 
 				return
 			if this.states.current.name == 'selected'
 				this.animate 'shown'
-				removeTag(this.name)
+				removeTag this.name
 				return
-		kitten.addChild(kittenName)
-		catLayer.addChild(kitten)
+		kitten.addChild kittenName
+		catLayer.addChild kitten
 		j += 1
 	
-	Onboard.addChild(catLayer)
+	Onboard.addChild catLayer
 	
 	catLayer.onTap ->
 		if this.states.current.name != 'default'
