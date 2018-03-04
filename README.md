@@ -69,7 +69,7 @@ setupExpandAnimations = () ->
 			time: 0.08
 			curve: Bezier.easeIn
 
-  # Flower in
+  # Flower out
 
 	chainAnimationsArray(chain, false)
 	return chain[0]
@@ -80,7 +80,7 @@ Define function: rotates x back to + and contract button fill back into button
 setupCloseAnimations = () ->
 	chain = []
 
-  # Flower out
+  # Flower in
 
   chain.push new Animation icon,
 		rotationZ: 0
@@ -103,6 +103,60 @@ closeAnim = setupCloseAnimations()
 add.onTap ->
 	if isExpanded then closeAnim.start() else expandAnim.start()
 	isExpanded = !isExpanded
+```
+
+## Move button to the center of the page
+
+### In setupExpandAnimations()
+
+Add after *chain.push new Animation icon* group
+```coffeescript
+	chain.push new Animation post0,
+		x: (Screen.width / 2) - smallRadius
+		y: (Screen.height / 2) - smallRadius
+```
+
+### In setupCloseAnimations
+
+Add before *chain.push new Animation icon,*
+```coffeescript
+	chain.push new Animation post0,
+		x: postOrigin.x
+		y: postOrigin.y
+```
+
+## Now some fun math for the flowering buttons
+
+### In setupExpandAnimations()
+Replace *# Flower out* with
+```coffeescript
+	dz = 0
+	for petal in post0.children
+		anim = new Animation petal,
+			x: radius*Math.cos(dz) + radialAdjustment
+			y: radius*Math.sin(dz) + radialAdjustment
+			width: 2*petalRadius
+			height: 2*petalRadius
+			options:
+				time: 0.15
+				curve: Bezier.easeInOut
+		chain.push(anim)
+		dz += step
+```
+
+### In setupCloseAnimations
+
+Replace *# Flower in* with
+```coffeescript
+	for petal in post0.children.reverse()
+		anim = new Animation petal,
+			x: 0
+			y: 0,
+			width: 0,
+			height: 0
+			options:
+				time: 0.05
+		chain.push(anim)
 ```
 
 # Onboarding
