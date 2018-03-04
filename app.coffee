@@ -7,7 +7,7 @@ postOrigin = {
 }
 
 chainAnimationsArray = (chain, isAuto) ->
-	if chain.length > 2
+	if chain.length > 1
 		for i in [1..chain.length-1]
 			chain[i-1].on Events.AnimationEnd, chain[i].start
 	if isAuto then chain[0].start()
@@ -19,7 +19,7 @@ setupExpandAnimations = () ->
 	radialAdjustment = smallRadius - petalRadius
 	step = 2*Math.PI / post0.children.length
 	chain = []
-	
+
 	chain.push new Animation Home,
 		backgroundColor: add.backgroundColor
 		options:
@@ -74,7 +74,7 @@ setupCloseAnimations = () ->
 		options:
 			time: 0.15
 			curve: Bezier.easeInOut
-	
+
 	chainAnimationsArray(chain, false)
 	return chain[0]
 
@@ -114,7 +114,7 @@ renderTags = () ->
 			tag.html = tags[i]
 			tag.backgroundColor = colors[i%colors.length]
 			tag.stateSwitch('filled')
-			
+
 		else
 			tag.stateSwitch('default')
 		i += 1
@@ -158,7 +158,7 @@ for cat in categories
 		width: CATEGORY_WIDTH
 		height: CATEGORY_WIDTH
 		backgroundColor: 'transparent'
-	
+
 	# Category Setup
 	catLayer = new Layer
 		x: 0
@@ -213,14 +213,14 @@ for cat in categories
 				time: 0.05
 
 	catLayer.addChild catName
-	
+
 	catLayer.on Events.StateSwitchEnd, ->
 		if this.states.previous.name == 'default'
 			for subcat in this.parent.children
 				if subcat == this
 					continue
 				subcat.animate 'unselected'
-	
+
 	catLayer.onTap ->
 		switch this.states.current.name
 			when 'default'
@@ -235,7 +235,7 @@ for cat in categories
 			when 'selected'
 				removeTag(this.name)
 				this.animate 'unselected'
-	
+
 	# Sub category setup
 	j = 0
 	for subcat in cat.children
@@ -276,7 +276,7 @@ for cat in categories
 				paddingTop: '4px'
 		subcatLayer.addChild subcatName
 		categoryGroup.addChild subcatLayer
-		
+
 		subcatLayer.onTap ->
 			switch this.states.current.name
 				when 'unselected'
@@ -286,7 +286,7 @@ for cat in categories
 					removeTag(this.name)
 					this.animate 'unselected'
 		j += 1
-	
+
 	categoryGroup.addChild catLayer
 	Onboard.addChild categoryGroup
 	if Math.floor(i / 2) > 0 then dy += (CATEGORY_WIDTH + CATEGORY_SPACING)

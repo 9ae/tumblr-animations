@@ -34,5 +34,41 @@ exports.cats = [
         "image": "music_jazz.jpg"
       }
     ]
+  },
+	{
+    "name": "Food",
+    "image": "food.jpg",
+    "children": [
+      {
+        "name": "Savory",
+        "image": "food_savory.jpg"
+      },
+      {
+        "name": "Sweets",
+        "image": "food_sweet.jpg"
+      },
+      {
+        "name": "Recipes",
+        "image": "food_recipes.jpg"
+      }
+    ]
+  },
+	{
+    "name": "Tech",
+    "image": "tech.jpg",
+    "children": [
+      {
+        "name": "Gadgets",
+        "image": "tech_gadget.jpg"
+      },
+      {
+        "name": "Software",
+        "image": "tech_software.jpg"
+      },
+      {
+        "name": "Robotics",
+        "image": "tech_robotics.jpg"
+      }
+    ]
   }
 ]
