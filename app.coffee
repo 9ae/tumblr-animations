@@ -12,28 +12,29 @@ chainAnimationsArray = (chain, isAuto) ->
 			chain[i-1].on Events.AnimationEnd, chain[i].start
 	if isAuto then chain[0].start()
 
-smallRadius = post0.width/2
-expand0 = new Animation Home,
-	backgroundColor: add.backgroundColor
-	options:
-		time: 0.25
-		curve: Bezier.easeInOut
-expand1 = new Animation icon,
-	rotationZ: -45
-	options:
-		time: 0.08
-		curve: Bezier.easeIn
-expand2 = new Animation post0,
-	x: (Screen.width / 2) - smallRadius
-	y: (Screen.height / 2) - smallRadius
-
-flower = () ->
+setupExpandAnimations = () ->
+	smallRadius = post0.width/2
 	radius = 80
 	petalRadius = 20
 	radialAdjustment = smallRadius - petalRadius
 	step = 2*Math.PI / post0.children.length
-	dz = 0
 	chain = []
+	
+	chain.push new Animation Home,
+		backgroundColor: add.backgroundColor
+		options:
+			time: 0.25
+			curve: Bezier.easeInOut
+	chain.push new Animation icon,
+		rotationZ: -45
+		options:
+			time: 0.08
+			curve: Bezier.easeIn
+	chain.push new Animation post0,
+		x: (Screen.width / 2) - smallRadius
+		y: (Screen.height / 2) - smallRadius
+
+	dz = 0
 	for petal in post0.children
 		anim = new Animation petal,
 			x: radius*Math.cos(dz) + radialAdjustment
@@ -45,11 +46,9 @@ flower = () ->
 				curve: Bezier.easeInOut
 		chain.push(anim)
 		dz += step
-	chainAnimationsArray(chain, true)
 
-expand0.on Events.AnimationEnd, expand1.start
-expand1.on Events.AnimationEnd, expand2.start
-expand2.on Events.AnimationEnd, flower
+	chainAnimationsArray(chain, false)
+	return chain[0]
 
 setupCloseAnimations = () ->
 	chain = []
@@ -62,30 +61,27 @@ setupCloseAnimations = () ->
 			options:
 				time: 0.05
 		chain.push(anim)
-	chainAnimationsArray(chain, false)
-	close0 = new Animation post0,
+
+	chain.push new Animation post0,
 		x: postOrigin.x
 		y: postOrigin.y
-	close1 = new Animation icon,
+	chain.push new Animation icon,
 		rotationZ: 0
 		options:
 			time: 0.08
-	close2 = new Animation Home,
+	chain.push new Animation Home,
 		backgroundColor: 'white'
 		options:
 			time: 0.15
 			curve: Bezier.easeInOut
-	close0.on Events.AnimationEnd, close1.start
-	close1.on Events.AnimationEnd, close2.start
-	if chain.length > 0
-		chain.pop().on Events.AnimationEnd, close0.start
-		return chain[0]
-	else
-		return close0
+	
+	chainAnimationsArray(chain, false)
+	return chain[0]
 
+expandAnim = setupExpandAnimations()
 closeAnim = setupCloseAnimations()
 add.onTap ->
-	if isExpanded then closeAnim.start() else expand0.start()
+	if isExpanded then closeAnim.start() else expandAnim.start()
 	isExpanded = !isExpanded
 
 
