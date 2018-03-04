@@ -217,8 +217,6 @@ for cat in categories
 				time: 0.05
 
 	catLayer.addChild catName
-	categoryGroup.addChild catLayer
-	Onboard.addChild categoryGroup
 	
 	catLayer.on Events.StateSwitchEnd, ->
 		if this.states.previous.name == 'default'
@@ -293,6 +291,8 @@ for cat in categories
 					this.animate 'unselected'
 		j += 1
 	
+	categoryGroup.addChild catLayer
+	Onboard.addChild categoryGroup
 	if Math.floor(i / 2) > 0 then dy += (CATEGORY_WIDTH + CATEGORY_SPACING)
 	i +=1
 
