@@ -255,7 +255,7 @@ dy = 150
 for cat in categories
 	categoryGroup = new Layer
 		x: if i % 2 == 0 then XLEFT else XRIGHT
-		y: dy
+		y: if i < 2 then dy else (dy + CATEGORY_WIDTH + CATEGORY_SPACING)
 		width: CATEGORY_WIDTH
 		height: CATEGORY_WIDTH
 		backgroundColor: 'transparent'
@@ -341,7 +341,6 @@ for cat in categories
 
 	categoryGroup.addChild catLayer
 	Onboard.addChild categoryGroup
-	if Math.floor(i / 2) > 0 then dy += (CATEGORY_WIDTH + CATEGORY_SPACING)
 	i +=1
 ```
 
