@@ -160,3 +160,30 @@ Replace *# Flower in* with
 ```
 
 # Onboarding
+
+Change flow.showNext(Home)
+```coffeescript
+flow.showNext(Onboard)
+```
+
+## Set up variables & import
+
+```coffeescript
+# Import files
+categories = (require "categories").cats
+
+# Screen variables
+tags = []
+colors = ['#009688', '#F44336', '#673AB7', '#3F51B5']
+CATEGORY_SPACING = 9
+XLEFT = 3
+CATEGORY_WIDTH = 180
+XRIGHT = XLEFT + CATEGORY_WIDTH + CATEGORY_SPACING
+SUBCATEGORY_WIDTH = 86
+SUBCATEGORY_OFFSET = 94
+DIM_SAT = 10
+DIM_BRIGHT = 50
+TAG_TEXT_HEIGHT = 20
+BORDER_RADIUS_CATEGORY = 6
+BORDER_RADIUS_SUBCAT = 3
+```
