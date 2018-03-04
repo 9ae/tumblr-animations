@@ -71,7 +71,7 @@ setupExpandAnimations = () ->
 
   # Flower in
 
-  chainAnimationsArray(chain, false)
+	chainAnimationsArray(chain, false)
 	return chain[0]
 ```
 
