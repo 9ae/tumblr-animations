@@ -40,7 +40,7 @@ add.onTap ->
 ### Helper function
 ```coffeescript
 chainAnimationsArray = (chain, isAuto) ->
-	if chain.length > 2
+	if chain.length > 1
 		for i in [1..chain.length-1]
 			chain[i-1].on Events.AnimationEnd, chain[i].start
 	if isAuto then chain[0].start()
@@ -100,6 +100,9 @@ Execute functions and return their results
 ```coffeescript
 expandAnim = setupExpandAnimations()
 closeAnim = setupCloseAnimations()
+add.onTap ->
+	if isExpanded then closeAnim.start() else expandAnim.start()
+	isExpanded = !isExpanded
 ```
 
 # Onboarding
