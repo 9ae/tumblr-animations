@@ -1,6 +1,8 @@
-# Post Animation
+# FAB Animation
 
-## Change *Home.onTap ->* to *post0.onTap ->*
+## Design/Code views
+Objects created in the Design view are accessible when you register them.
+Change *Home.onTap ->* to *post0.onTap ->*
 
 ```coffeescript
 post0.onTap ->
