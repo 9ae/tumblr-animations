@@ -89,36 +89,38 @@ add.onTap ->
 	isExpanded = !isExpanded
 
 
-# Onboarding Screen
+# ONBOARDING SCREEN
+
+# Import files
+categories = (require "categories").cats
+
+# Screen variables
 tags = []
 colors = ['#009688', '#F44336', '#673AB7', '#3F51B5']
-categories = (require "categories").cats
-xLeft = 3
-xRight = 192
-dy = 150
-i = 0
+CATEGORY_SPACING = 9
+XLEFT = 3
+CATEGORY_WIDTH = 180
+XRIGHT = XLEFT + CATEGORY_WIDTH + CATEGORY_SPACING
+SUBCATEGORY_WIDTH = 86
+SUBCATEGORY_OFFSET = 94
+DIM_SAT = 10
+DIM_BRIGHT = 50
+TAG_TEXT_HEIGHT = 20
+BORDER_RADIUS_CATEGORY = 6
+BORDER_RADIUS_SUBCAT = 3
 
+
+# Tag functions
 renderTags = () ->
 	i = 0
 	for tag in tagcloud.children
 		if i < tags.length
 			tag.html = tags[i]
 			tag.backgroundColor = colors[i%colors.length]
-			tag.style =
-				color: 'white'
-				fontSize: '11px'
-				textAlign: 'center'
-				borderWidth: '0'
-				lineHeight: '9px'
-				paddingTop: '7px'
+			tag.stateSwitch('filled')
 			
 		else
-			tag.style =
-				borderStyle: 'dashed'
-				borderWidth: '1px'
-				borderColor: '#dcdcdc'
-			tag.html = ''
-			tag.backgroundColor = 'transparent'
+			tag.stateSwitch('default')
 		i += 1
 
 addTag = (tag) ->
@@ -131,114 +133,167 @@ removeTag = (tag) ->
 		tags.splice(index, 1)
 		renderTags()
 
+# Initialize Tags
+i = 0
+dy = 150
+for tagLayer in tagcloud.children
+	tagLayer.states.add
+		default:
+			html: ''
+			backgroundColor: 'transparent'
+			style:
+				borderStyle: 'dashed'
+				borderWidth: '1px'
+				borderColor: '#dcdcdc'
+		filled:
+			style:
+				color: 'white'
+				fontSize: '11px'
+				textAlign: 'center'
+				borderWidth: '0'
+				lineHeight: '1.0em'
+				paddingTop: '10px'
+
+# Initialize Categories
 for cat in categories
-	catLayer = new Layer
-		x: if i % 2 == 0 then xLeft else xRight
+	categoryGroup = new Layer
+		x: if i % 2 == 0 then XLEFT else XRIGHT
 		y: dy
-		width: 180
-		height: 180
+		width: CATEGORY_WIDTH
+		height: CATEGORY_WIDTH
+		backgroundColor: 'transparent'
+	
+	# Category Setup
+	catLayer = new Layer
+		x: 0
+		y: 0
+		width: CATEGORY_WIDTH
+		height: CATEGORY_WIDTH
 		image: "images/onboard/"+cat.image
-		saturate: 10
-		brightness: 50
+		saturate: DIM_SAT
+		brightness: DIM_BRIGHT
 		name: cat.name
-		borderRadius: 6
+		borderRadius: BORDER_RADIUS_CATEGORY
 	catLayer.states =
+		unselected:
+			width: SUBCATEGORY_WIDTH
+			height: SUBCATEGORY_WIDTH
+			x: SUBCATEGORY_OFFSET
+			y: SUBCATEGORY_OFFSET
+			saturate: DIM_SAT
+			brightness: DIM_BRIGHT
+			borderRadius: BORDER_RADIUS_SUBCAT
 		selected:
+			width: SUBCATEGORY_WIDTH
+			height: SUBCATEGORY_WIDTH
+			x: SUBCATEGORY_OFFSET
+			y: SUBCATEGORY_OFFSET
 			brightness: 100
 			saturate: 100
-			blur: 12
-		divide:
-			blur: 0
-			opacity: 1
-			image: 'none'
-	nameTag = new TextLayer
-		text: cat.name
+			borderRadius: BORDER_RADIUS_SUBCAT
+	catName = new Layer
 		name: 'tagName'
+		html: cat.name
+		backgroundColor: 'transparent'
 		color: 'white'
-		padding:
-			left: 8
-			top: 8
-# 	nameTag = new Layer
-# 		name: 'tagName'
-# 		html: cat.name
-# 		x: 0
-# 		y: 160
-# 		width: 180
-# 		height: 20
-# 		backgroundColor: 'rgba(0, 0, 0, 0.6)'
-# 		color: 'white'
-# 		borderRadius: '0 0 6px 6px'
-# 		style:
-# 			fontSize: '12px'
-# 			paddingLeft: '6px'
-# 			lineHeight: '12px'
-# 			paddingTop: '4px'
-	catLayer.addChild nameTag
-	j = 0
-	for kit in cat.children
-		kitten = new Layer
-			width: 86
-			height: 86
-			x: if j % 2 == 0 then 0 else 94
-			y: if Math.floor(j / 2) == 0 then 0 else 94
-			image: "images/onboard/"+kit.image
-			saturate: 10
-			brightness: 50
-			opacity: 0
-			name: kit.name + '<br />'+cat.name
-			borderRadius: 3
-		kitten.states = 
-			shown:
-				opacity: 100
-				saturate: 10
-				brightness: 50
-			selected:
-				saturate: 100
-				brightness: 100
-		kittenName = new Layer
-			html: kit.name
+		style:
+			paddingTop: '6px'
+			paddingLeft: '6px'
+			fontSize: '32px'
+	catName.states =
+		small:
 			x: 0
-			y: 66
-			width: 86
-			height: 20
+			y: SUBCATEGORY_WIDTH - TAG_TEXT_HEIGHT
+			width: SUBCATEGORY_WIDTH
+			height: TAG_TEXT_HEIGHT
 			backgroundColor: 'rgba(0, 0, 0, 0.6)'
-			color: 'white'
 			borderRadius: '0 0 3px 3px'
 			style:
 				fontSize: '12px'
 				paddingLeft: '6px'
 				lineHeight: '12px'
 				paddingTop: '4px'
-		kitten.onTap ->
-			if this.states.current.name == 'shown'
-				this.animate 'selected'
-				addTag this.name 
-				return
-			if this.states.current.name == 'selected'
-				this.animate 'shown'
-				removeTag this.name
-				return
-		kitten.addChild kittenName
-		catLayer.addChild kitten
-		j += 1
+			animationOptions:
+				time: 0.05
+
+	catLayer.addChild catName
+	categoryGroup.addChild catLayer
+	Onboard.addChild categoryGroup
 	
-	Onboard.addChild catLayer
+	catLayer.on Events.StateSwitchEnd, ->
+		if this.states.previous.name == 'default'
+			for subcat in this.parent.children
+				if subcat == this
+					continue
+				subcat.animate 'unselected'
 	
 	catLayer.onTap ->
-		if this.states.current.name != 'default'
-			return
-		this.animate 'selected'
-		thisLayer = this
-		Utils.delay .8, ->
-			thisLayer.stateSwitch 'divide'
-			for ch in thisLayer.children
-				if ch.name != 'tagName'
-					ch.animate 'shown'
-				else
-					ch.opacity = 0
-		
+		switch this.states.current.name
+			when 'default'
+				labels = this.childrenWithName 'tagName'
+				if labels.length == 1
+					labels[0].animate 'small'
+					this.animate 'unselected'
+					labels[0].html = 'All '+labels[0].html
+			when 'unselected'
+				addTag(this.name)
+				this.animate 'selected'
+			when 'selected'
+				removeTag(this.name)
+				this.animate 'unselected'
 	
-	if Math.floor(i / 2) > 0 then dy += 189
+	# Sub category setup
+	j = 0
+	for subcat in cat.children
+		subcatLayer = new Layer
+			width: SUBCATEGORY_WIDTH
+			height: SUBCATEGORY_WIDTH
+			x: if j % 2 == 0 then 0 else SUBCATEGORY_OFFSET
+			y: if Math.floor(j / 2) == 0 then 0 else SUBCATEGORY_OFFSET
+			image: "images/onboard/"+subcat.image
+			saturate: DIM_SAT
+			brightness: DIM_BRIGHT
+			opacity: 0
+			name: subcat.name
+			borderRadius: BORDER_RADIUS_SUBCAT
+		subcatLayer.states.add
+			unselected:
+				opacity: 1
+				saturate: DIM_SAT
+				brightness: DIM_BRIGHT
+			selected:
+				opacity: 1
+				saturate: 100
+				brightness: 100
+		subcatName = new Layer
+			x: 0
+			y: SUBCATEGORY_WIDTH - TAG_TEXT_HEIGHT
+			width: SUBCATEGORY_WIDTH
+			height: TAG_TEXT_HEIGHT
+			name: 'tagName'
+			html: subcat.name
+			color: 'white'
+			backgroundColor: 'rgba(0, 0, 0, 0.6)'
+			borderRadius: '0 0 3px 3px'
+			style:
+				fontSize: '12px'
+				paddingLeft: '6px'
+				lineHeight: '12px'
+				paddingTop: '4px'
+		subcatLayer.addChild subcatName
+		categoryGroup.addChild subcatLayer
+		
+		subcatLayer.onTap ->
+			switch this.states.current.name
+				when 'unselected'
+					addTag(this.name)
+					this.animate 'selected'
+				when 'selected'
+					removeTag(this.name)
+					this.animate 'unselected'
+		j += 1
+	
+	if Math.floor(i / 2) > 0 then dy += (CATEGORY_WIDTH + CATEGORY_SPACING)
 	i +=1
 
 renderTags()

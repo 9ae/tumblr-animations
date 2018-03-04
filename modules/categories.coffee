@@ -8,12 +8,8 @@ exports.cats = [
         "image": "design_typo.jpg"
       },
       {
-        "name": "Graphic",
+        "name": "Graphics",
         "image": "design_graphic.jpg"
-      },
-      {
-        "name": "Product",
-        "image": "design_product.jpg"
       },
       {
         "name": "Patterns",
@@ -30,16 +26,12 @@ exports.cats = [
         "image": "music_punk.jpg"
       },
       {
-        "name": "Electronic",
+        "name": "EDM",
         "image": "music_edm.jpg"
       },
       {
         "name": "Jazz",
         "image": "music_jazz.jpg"
-      },
-      {
-        "name": "Indie",
-        "image": "music_indie.jpg"
       }
     ]
   }
